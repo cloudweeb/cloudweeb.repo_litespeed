@@ -1,0 +1,31 @@
+---
+
+- block:
+
+    - name: (Install Debian) Ensure gpg package installed
+      apt:
+        name: gpg
+        state: present
+
+    - name: (Install Debian) Add OpenLitespeed signing key
+      apt_key:
+        url: '{{ item }}'
+        state: present
+      loop:
+        - http://rpms.litespeedtech.com/debian/lst_debian_repo.gpg
+        - http://rpms.litespeedtech.com/debian/lst_repo.gpg
+
+    - name: (Install Debian) Install OpenLitespeed repository
+      apt_repository:
+        repo: 'deb http://rpms.litespeedtech.com/debian/ {{ ansible_distribution_release }} main'
+        filename: litespeed
+
+  when: ansible_os_family == 'Debian'
+
+- block:
+
+    - name: (Install CentOS) Install OpenLiteSpeed repository
+      yum:
+        name: 'http://rpms.litespeedtech.com/centos/litespeed-repo-1.1-1.el{{ ansible_distribution_major_version }}.noarch.rpm'
+
+  when: ansible_os_family == 'RedHat'
